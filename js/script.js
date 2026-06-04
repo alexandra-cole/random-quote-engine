@@ -95,3 +95,20 @@ function clearDisplayErrors() {
   errorBox.textContent = "";
   errorBox.style.display = "none";
 }
+
+   .then((data) => {
+      const quoteContainer = document.getElementById("result");
+      quoteContainer.innerHTML = data;
+      
+      // --- TYPOGRAPHY LOOP ROTATION ---
+      // 1. Set the element's inline font-family to the current font index matching our counter
+      quoteContainer.style.fontFamily = fonts[rotating];
+      
+      // 2. Add 1 to counter. The % remainder operator forces it to cycle back to 0 when it hits the limit!
+      rotating = (rotating + 1) % fonts.length; 
+      
+      // Transition animation execution
+      quoteContainer.classList.remove("fade-in");
+      void quoteContainer.offsetWidth; 
+      quoteContainer.classList.add("fade-in"); 
+    })
