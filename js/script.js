@@ -1,34 +1,76 @@
 /**
- * Full-Stack Fetch Sandbox Core Script
+ * Full-Stack Fetch Sandbox Core Script by Alexandra Cole
  */
 
 // --- GLOBAL DEVELOPMENT SETTINGS ---
 // Modes available: "console" (quiet logging) or "screen" (renders error box in UI)
 const ERROR_MODE = "screen"; 
 
-document.getElementById("fetchData").addEventListener("click", () => {
-  
-  // Clear out any stale errors from a previous click attempt
-  clearDisplayErrors();
 
-  fetch("https://newmanix.com/classes/it102/random_quotes.php")
+// Select button
+const button = document.getElementById("fetchData");
+
+// Typography related
+const FONTS = ["Qwitcher Grypen", "Tulpen One", "Shadows Into Light"];
+let fontIndex = 0;
+
+// Automation 
+// const SERVER = "server.php";
+const SERVER = "https://newmanix.com/classes/it102/random_quotes.php";
+getQuote(SERVER);
+setInterval( () => getQuote(SERVER), 3000);
+
+// Attach event listener
+button.addEventListener("click", () => getQuote(SERVER));
+
+/**
+ *  Standalone function to send a request to server
+ *  including: displayQuote, rotateFonts
+ */
+function getQuote(server) {
+  fetch(server)
     .then((res) => {
-      // CRITICAL: Fetch promises do NOT reject on HTTP errors (like 404 or 500).
-      // We must explicitly evaluate the response status flag.
       if (!res.ok) {
         throw new Error(`HTTP Error Status: ${res.status} (${res.statusText || 'Unknown State'})`);
       }
       return res.text();
     })
     .then((data) => {
-      // Route the raw payload safely into our UI container
-      document.getElementById("result").innerHTML = data;
+
+      // Animation
+      displayQuote(data);
+      
+      // Change font
+      changeFonts(fontIndex);
+
+      // Increment fontIndex
+      if (fontIndex < FONTS.length - 1) {
+        fontIndex++;
+      }
     })
     .catch((err) => {
-      // Handle missing files, network dropout, or Backend failures
-      handleRoutingError(err);
-    });
-});
+      alert("Error: " + err);
+    })
+}
+
+/**
+ * Display quotes nicely with animation
+ */
+function displayQuote(data) {
+  const result = document.getElementById("result");
+  result.classList.remove("fade-in");
+  void result.offsetWidth;    // <-- REFLOW
+  result.textContent = data;
+  result.classList.add("fade-in");
+}
+
+/**
+ * Rotate fonts
+ */
+function changeFonts(fontIndex) {
+  const result = document.getElementById("result");
+    result.style.fontFamily = FONTS[fontIndex];
+}
 
 /**
  * Dispatches errors to the chosen target based on configuration
